@@ -5,9 +5,9 @@ class Db_base():
 
 	def __init__(self):
 		self.db = pymysql.connect(
-				"xxx",
-				"xxx",
-				"xxx",
+				"cyril-mysql-rds.ckgoiwrtkuxz.ap-northeast-1.rds.amazonaws.com",
+				"cyril",
+				"aaaa5566",
 				"spider1")
 
 	# dispose
