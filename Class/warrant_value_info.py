@@ -31,4 +31,7 @@ class WarrantValueInfoClass():
 		self.warrant_goal_value = 0
 
 		# 達標毛利
-		self.warrant_goal_value_diff =0
+		self.warrant_goal_value_diff = 0
+		
+		# 剩餘天數
+		self.rest_day = 0

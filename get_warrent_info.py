@@ -7,7 +7,7 @@ from Class.warrant_value_info import WarrantValueInfoClass
 
 # 取得權證清單
 def GetWarrantListDesc(stockNumber):
-	url = f"http://warrant.cathaysec.com.tw/ws/WarSearch.aspx?showType=basic_123&p=CPCode,Derivative,Broker,Conver,Lever,,,Sp,Ep,S_Period,E_Period,BuySellRate,PageSize,PageNo,priority,listCode,Amt,Vol&v=7,ALL,ALL,ALL,ALL,,,-10000,10000,90,180,ALL,15000,1,888,{stockNumber},ALL,ALL"
+	url = f"http://warrant.cathaysec.com.tw/ws/WarSearch.aspx?showType=basic_123&p=CPCode,Derivative,Broker,Conver,Lever,,,Sp,Ep,S_Period,E_Period,BuySellRate,PageSize,PageNo,priority,listCode,Amt,Vol&v=1,ALL,ALL,ALL,ALL,,,-10000,10000,90,180,ALL,15000,1,888,{stockNumber},ALL,ALL"
 
 	param = {
 				"sEcho": "5",
@@ -143,15 +143,16 @@ def Main(stockNumber, stockGoal):
 		temp.warrant_value_diff = float(temp.warrant_value - temp.sell_price * 1000)
 		temp.warrant_goal_value = float((temp.stock_goal - temp.strike_price) * 1000 * temp.value_rate)
 		temp.warrant_goal_value_diff = float(temp.warrant_goal_value - temp.sell_price * 1000)
+		temp.rest_day = warrant.rest_day
 
 		warrantValueInfoList.append(temp)
 
 	warrantValueInfoList = sorted(warrantValueInfoList, key=attrgetter('warrant_value_diff'))
 
-	print('股票代號\t\t權證編號\t\t權證價格\t\t履約價\t\t實行比例\t\t當前股價\t\t目標股價\t\t權證實際毛利\t\t權證目標價毛利')
+	print('股票代號\t權證編號\t權證價格\t履約價\t實行比例\t當前股價\t目標股價\t權證實際毛利\t權證目標價毛利\t剩餘天數')
 
 	for data in warrantValueInfoList:
-		temp = 	"%s\t\t%s\t\t%.2f\t\t%.2f\t\t%.2f\t\t%.2f\t\t%.2f\t\t%.4f\t\t%.2f" % (data.stock_number, data.code, data.sell_price, data.strike_price, data.value_rate, data.stock_price, data.stock_goal, data.warrant_value_diff, data.warrant_goal_value_diff)
+		temp = 	"%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.4f\t%.4f\t%s" % (data.stock_number, data.code, data.sell_price, data.strike_price, data.value_rate, data.stock_price, data.stock_goal, data.warrant_value_diff, data.warrant_goal_value_diff, data.rest_day)
 
 		print(temp)
 
