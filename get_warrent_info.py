@@ -120,8 +120,6 @@ def GetWarrantInfo(codeList):
 
 # 主程序
 def Main(stockNumber, stockGoal):
-	stockNumber = '2345'
-	stockGoal = 115
 
 	codeList = GetWarrantCodeList(stockNumber)
 
