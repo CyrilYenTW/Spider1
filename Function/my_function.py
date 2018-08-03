@@ -7,7 +7,7 @@ def mapping_daily_info(stock_number, daily_info):
 	for info in daily_info:
 		temp = DailyInfoClass()
 		temp.stock_number = stock_number
-		temp.date = convert_date(info[0])
+		temp.tranding_date = convert_date(info[0])
 		temp.trading_volume = int(info[1].replace(',',''))
 		temp.trading_value = int(info[2].replace(',',''))
 		temp.open = info[3]

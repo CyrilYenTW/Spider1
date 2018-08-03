@@ -125,4 +125,6 @@ def main(stockNumber):
 		weekInfoList = GetStockWeekInfoList(weekDate, stockNumber)
 		Insert(weekInfoList)
 
-main('2345')
+stockNumber = input("Stock Number =>");
+
+main(stockNumber)

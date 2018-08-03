@@ -5,7 +5,7 @@ import json
 from datetime import datetime, date
 from Function.my_function import mapping_daily_info
 from Class.stock_daily_info import DailyInfoClass
-from Module.stock_daily_info import insert
+from Module.stock_daily_info import insert, insertList
 
 # 取得交易資料
 def get_info(stock_number, date_sting):
@@ -22,7 +22,8 @@ def get_info(stock_number, date_sting):
 		info_list = mapping_daily_info(stock_number, daily_info['data'])
 
 		# 新增數據
-		insert(info_list)
+		#insert(info_list)
+		insertList(info_list)
 
 
 # 取得下一個月的日期

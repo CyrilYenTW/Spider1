@@ -7,7 +7,7 @@ class DailyInfoClass():
 		self.stock_number = ''
 
 		# 交易日
-		self.date = ''
+		self.tranding_date = ''
 
 		#總成交股數
 		self.trading_volume = 0

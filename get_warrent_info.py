@@ -6,8 +6,8 @@ from operator import attrgetter
 from Class.warrant_value_info import WarrantValueInfoClass
 
 # 取得權證清單
-def GetWarrantListDesc(stockNumber):
-	url = f"http://warrant.cathaysec.com.tw/ws/WarSearch.aspx?showType=basic_123&p=CPCode,Derivative,Broker,Conver,Lever,,,Sp,Ep,S_Period,E_Period,BuySellRate,PageSize,PageNo,priority,listCode,Amt,Vol&v=1,ALL,ALL,ALL,ALL,,,-10000,10000,90,180,ALL,15000,1,888,{stockNumber},ALL,ALL"
+def GetWarrantListDesc(stockNumber, warrantType):
+	url = f"http://warrant.cathaysec.com.tw/ws/WarSearch.aspx?showType=basic_123&p=CPCode,Derivative,Broker,Conver,Lever,,,Sp,Ep,S_Period,E_Period,BuySellRate,PageSize,PageNo,priority,listCode,Amt,Vol&v={warrantType},ALL,ALL,ALL,ALL,,,-10000,10000,90,180,ALL,15000,1,888,{stockNumber},ALL,ALL"
 
 	param = {
 				"sEcho": "5",
@@ -85,9 +85,9 @@ def GetWarrantDetail(warrantCode):
 	return result
 
 # 取得權證代號清單
-def GetWarrantCodeList(stockNumber):
+def GetWarrantCodeList(stockNumber, warrantType):
 	codeList = []
-	datas = GetWarrantListDesc(stockNumber)
+	datas = GetWarrantListDesc(stockNumber, warrantType)
 	for data in datas:
 		codeList.append(data[2])
 	return codeList
@@ -97,31 +97,34 @@ def GetWarrantInfo(codeList):
 	warrnatList = []
 
 	for code in codeList:
-		responseInfo = GetWarrantDetail(code)
+		try:
+			responseInfo = GetWarrantDetail(code)
 
-		warrantInfo = responseInfo['items'][0]
+			warrantInfo = responseInfo['items'][0]
 
-		warrant = WarrantInfoClass()
+			warrant = WarrantInfoClass()
 
-		warrant.get_datetime = responseInfo['GT']
-		warrant.stock_number = warrantInfo['X_UND_ID7']
-		warrant.stock_price = warrantInfo['X_OBJ_TXN_PRICE']
-		warrant.code = warrantInfo['X_ID7']
-		warrant.strike_price = float(warrantInfo['X_N_STRIKE_PRC'])
-		warrant.value_rate = float(warrantInfo['X_N_UND_CONVER'])
-		warrant.outside_amount = int(warrantInfo['X_OUT_TOT_BAL_VOL'])
-		warrant.rest_day = int(warrantInfo['X_TRANS_DAYS'])
-		warrant.sell_price = float(warrantInfo['X_WAR_SELL_PRICE'])
-		warrant.buy_price = float(warrantInfo['X_WAR_BUY_PRICE'])
+			warrant.get_datetime = responseInfo['GT']
+			warrant.stock_number = warrantInfo['X_UND_ID7']
+			warrant.stock_price = warrantInfo['X_OBJ_TXN_PRICE']
+			warrant.code = warrantInfo['X_ID7']
+			warrant.strike_price = float(warrantInfo['X_N_STRIKE_PRC'])
+			warrant.value_rate = float(warrantInfo['X_N_UND_CONVER'])
+			warrant.outside_amount = int(warrantInfo['X_OUT_TOT_BAL_VOL'])
+			warrant.rest_day = int(warrantInfo['X_TRANS_DAYS'])
+			warrant.sell_price = float(warrantInfo['X_WAR_SELL_PRICE'])
+			warrant.buy_price = float(warrantInfo['X_WAR_BUY_PRICE'])
 
-		warrnatList.append(warrant)
+			warrnatList.append(warrant)
+		except:
+			print('Error')
 
 	return warrnatList
 
 # 主程序
-def Main(stockNumber, stockGoal):
+def Main(stockNumber, stockGoal, warrantType):
 
-	codeList = GetWarrantCodeList(stockNumber)
+	codeList = GetWarrantCodeList(stockNumber, warrantType)
 
 	warrantList = GetWarrantInfo(codeList)
 
@@ -139,9 +142,9 @@ def Main(stockNumber, stockGoal):
 		temp.strike_price = float(warrant.strike_price)
 		temp.stock_price = float(warrant.stock_price)
 		temp.stock_goal = float(stockGoal)
-		temp.warrant_value = float((temp.stock_price - temp.strike_price) * 1000 * temp.value_rate)
+		temp.warrant_value = float((temp.stock_price - temp.strike_price) * 1000 * temp.value_rate * (1 if warrantType == '1' else -1))
 		temp.warrant_value_diff = float(temp.warrant_value - temp.sell_price * 1000)
-		temp.warrant_goal_value = float((temp.stock_goal - temp.strike_price) * 1000 * temp.value_rate)
+		temp.warrant_goal_value = float((temp.stock_goal - temp.strike_price) * 1000 * temp.value_rate * (1 if warrantType == '1' else -1))
 		temp.warrant_goal_value_diff = float(temp.warrant_goal_value - temp.sell_price * 1000)
 		temp.rest_day = warrant.rest_day
 
@@ -152,11 +155,12 @@ def Main(stockNumber, stockGoal):
 	print('股票代號\t權證編號\t權證價格\t履約價\t實行比例\t當前股價\t目標股價\t權證實際毛利\t權證目標價毛利\t剩餘天數')
 
 	for data in warrantValueInfoList:
-		temp = 	"%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.4f\t%.4f\t%s" % (data.stock_number, data.code, data.sell_price, data.strike_price, data.value_rate, data.stock_price, data.stock_goal, data.warrant_value_diff, data.warrant_goal_value_diff, data.rest_day)
+		temp = 	"%s\t%s\t%.2f\t%.2f\t%.4f\t%.2f\t%.2f\t%.4f\t%.4f\t%s" % (data.stock_number, data.code, data.sell_price, data.strike_price, data.value_rate, data.stock_price, data.stock_goal, data.warrant_value_diff, data.warrant_goal_value_diff, data.rest_day)
 
 		print(temp)
 
 stockNumber = input("請輸入股票代碼:")
 stockGoal = input("請輸入目標價格:")
+warrantType = input("權證型態[1.認購 2.認售]:")
 
-Main(stockNumber, stockGoal)
+Main(stockNumber, stockGoal, warrantType)
