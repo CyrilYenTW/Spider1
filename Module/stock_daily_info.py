@@ -56,3 +56,13 @@ def get_predict_info(stock_number):
 	db_base.dispose()
 
 	return result
+
+# 取得 db最後的日期
+def get_db_last_date(stock_number):
+	query = f"select tranding_date from stock_daily_info where stock_number = {stock_number} order by tranding_date desc limit 1;"
+
+	db_base = Db_base()
+
+	result = db_base.execute(query)
+
+	return result

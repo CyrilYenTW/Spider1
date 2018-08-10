@@ -2,6 +2,7 @@
 
 import requests
 import json
+import time
 from datetime import datetime, date
 from Function.my_function import mapping_daily_info
 from Class.stock_daily_info import DailyInfoClass
@@ -55,5 +56,8 @@ def main():
 
 		start_date = get_next_month(start_date_string)
 		get_info(stock_number, start_date_string)
+
+		time.sleep(2)
+
 
 main()
