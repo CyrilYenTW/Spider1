@@ -4,12 +4,12 @@ import requests
 import json
 import time
 from datetime import datetime, date
-from Function.my_function import mapping_daily_info
+from Function.my_function import mapping_daily_info, get_last_date, get_stock_list
 from Class.stock_daily_info import DailyInfoClass
 from Module.stock_daily_info import insert, insertList
 
 # 取得交易資料
-def get_info(stock_number, date_sting):
+def get_info(stock_number, date_sting, lastDateString = '19900101'):
 	# 交易所網址
 	url = f'http://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date={date_sting}&stockNo={stock_number}&_=1531358889990'
 
@@ -20,7 +20,7 @@ def get_info(stock_number, date_sting):
 
 	if(daily_info['stat'] == 'OK' and len(daily_info['data']) > 0):
 		# 將json物件轉成自訂物件
-		info_list = mapping_daily_info(stock_number, daily_info['data'])
+		info_list = mapping_daily_info(stock_number, daily_info['data'], lastDateString)
 
 		# 新增數據
 		#insert(info_list)
@@ -43,8 +43,9 @@ def get_next_month(date_string):
 	return datetime.strptime(year+month, '%Y%m')
 
 # 主程式
-def main():
+def new_daily_info():
 	stock_number = input("請輸入股票代號 => ")
+
 	start_date_string = input("請輸入起始年月(yyyymm) =>")
 
 	start_date = datetime.strptime(start_date_string, '%Y%m')
@@ -59,5 +60,40 @@ def main():
 
 		time.sleep(2)
 
+# 更新資料庫
+def update_daily_info():
+	stockNumberList = get_stock_list();
 
-main()
+	for stockNumber in stockNumberList:
+
+		print(f"\nProcess {stockNumber}")
+
+		lastDateString = get_last_date(stockNumber)
+
+		lastMonthString = lastDateString[0:6]
+
+		startDate = datetime.strptime(lastMonthString, '%Y%m')
+
+		while datetime.now() > startDate:
+			startDateString = datetime.strftime(startDate, '%Y%m') + '01'
+
+			print(f'Process Moth => {startDateString}')
+
+			startDate = get_next_month(startDateString)
+
+			get_info(stockNumber, startDateString, lastDateString)
+
+			time.sleep(2)
+
+	print('Process Update Done!!')
+
+
+def Main():
+	selection = input("請選擇[1.新增股票, 2.更新] : ")
+
+	if selection == '1':
+		new_daily_info()
+	elif selection == '2':
+		update_daily_info()
+
+Main()

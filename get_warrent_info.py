@@ -160,7 +160,9 @@ def Main(stockNumber, stockGoal, warrantType):
 		print(temp)
 
 stockNumber = input("請輸入股票代碼:")
+
 stockGoal = input("請輸入目標價格:")
+
 warrantType = input("權證型態[1.認購 2.認售]:")
 
 Main(stockNumber, stockGoal, warrantType)

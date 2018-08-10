@@ -41,7 +41,6 @@ def insertList(info_list):
 	db_base.dispose()
 	
 
-
 # 呼叫 get_predict_info
 def get_predict_info(stock_number):
 	query = f"call get_predict_info('{stock_number}')"
@@ -65,4 +64,22 @@ def get_db_last_date(stock_number):
 
 	result = db_base.execute(query)
 
+	db_base.dispose()
+
 	return result
+
+# 取得現有的股票清單
+def get_stock_number_list():
+	query = "select stock_number from stock_daily_info group by stock_number;"
+
+	db_base = Db_base()
+
+	try:
+		result = db_base.executeFetchAll(query)
+	except:
+		print('Db Error!!')
+
+	db_base.dispose()
+
+	return result
+
