@@ -31,4 +31,8 @@ class WarrantInfoClass():
 		# 買價
 		self.buy_price = 0
 
+		# 日期
 		self.get_datetime = ''
+
+		# 在外流通量
+		self.sold_amount = 0

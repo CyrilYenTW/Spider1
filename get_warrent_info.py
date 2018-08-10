@@ -114,6 +114,7 @@ def GetWarrantInfo(codeList):
 			warrant.rest_day = int(warrantInfo['X_TRANS_DAYS'])
 			warrant.sell_price = float(warrantInfo['X_WAR_SELL_PRICE'])
 			warrant.buy_price = float(warrantInfo['X_WAR_BUY_PRICE'])
+			warrant.sold_amount = int(warrantInfo['X_OUT_TOT_BAL_VOL'])
 
 			warrnatList.append(warrant)
 		except:
@@ -127,8 +128,6 @@ def Main(stockNumber, stockGoal, warrantType):
 	codeList = GetWarrantCodeList(stockNumber, warrantType)
 
 	warrantList = GetWarrantInfo(codeList)
-
-	warrantValueList = WarrantValueInfoClass()
 
 	warrantValueInfoList = []
 
@@ -147,15 +146,16 @@ def Main(stockNumber, stockGoal, warrantType):
 		temp.warrant_goal_value = float((temp.stock_goal - temp.strike_price) * 1000 * temp.value_rate * (1 if warrantType == '1' else -1))
 		temp.warrant_goal_value_diff = float(temp.warrant_goal_value - temp.sell_price * 1000)
 		temp.rest_day = warrant.rest_day
+		temp.sold_amount = int(warrant.sold_amount)
 
 		warrantValueInfoList.append(temp)
 
 	warrantValueInfoList = sorted(warrantValueInfoList, key=attrgetter('warrant_value_diff'))
 
-	print('股票代號\t權證編號\t權證價格\t履約價\t實行比例\t當前股價\t目標股價\t權證實際毛利\t權證目標價毛利\t剩餘天數')
+	print('股票代號\t權證編號\t權證價格\t履約價\t實行比例\t當前股價\t目標股價\t權證實際毛利\t權證目標價毛利\t剩餘天數\t流通量')
 
 	for data in warrantValueInfoList:
-		temp = 	"%s\t%s\t%.2f\t%.2f\t%.4f\t%.2f\t%.2f\t%.4f\t%.4f\t%s" % (data.stock_number, data.code, data.sell_price, data.strike_price, data.value_rate, data.stock_price, data.stock_goal, data.warrant_value_diff, data.warrant_goal_value_diff, data.rest_day)
+		temp = 	"%s\t%s\t%.2f\t%.2f\t%.4f\t%.2f\t%.2f\t%.4f\t%.4f\t%s\t%s" % (data.stock_number, data.code, data.sell_price, data.strike_price, data.value_rate, data.stock_price, data.stock_goal, data.warrant_value_diff, data.warrant_goal_value_diff, data.rest_day, data.sold_amount)
 
 		print(temp)
 
